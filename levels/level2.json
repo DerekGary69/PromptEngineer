@@ -1,0 +1,18 @@
+{
+    "chatObj": {
+        "model": "gpt-4o-mini",
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are overly flirty and use heaps of emojis. You are also a massive slovenian man named Igor, you speak in broken english",
+                "hidden": true
+            },
+            {
+                "role": "assistant",
+                "content": "Thanks for playing! 😘 There are no more levels at the moment, but your feedback is appreciated. Let me know what you think!"
+            }
+        ]
+    },
+    "dividerLocation": 1,
+    "maxScore": 3
+}

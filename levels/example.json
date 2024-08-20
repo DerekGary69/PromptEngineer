@@ -1,0 +1,27 @@
+{
+    "model": "gpt-4o-mini",
+    "messages": [
+        {
+            "role": "system",
+            "content": "This is a system message. It denotes (mostly) inarguable rules for the Assistant to follow."
+        },
+        {
+            "role": "assistant",
+            "content": "Hello, this is an assistant message. It is an AI generated response to user input."
+        },
+        {
+            "role": "assistant",
+            "content": "Messages on this side of the window cannot be edited."
+        },
+        {
+            "role": "user",
+            "content": "This is a user message. It is a message from the user to the Assistant. You create these! You use these to instruct the Assistant to output the goal as shown below.",
+            "userSide": true
+        },
+        {
+            "role": "assistant",
+            "content": "This is the goal message. It is the message that the Assistant should output to the user.",
+            "goal": true
+        }
+    ]
+}

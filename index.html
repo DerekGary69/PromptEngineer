@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineer</title>
+</head>
+<body>
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --secondary-color: #f4f4f4;
+            --tertiary-color: #b8b8b8;
+            --accent-color: #5a5a5a;
+            --font-color: #000000;
+
+            --user-color: rgb(76, 76, 255);
+            --assistant-color: rgb(233, 233, 233);
+            --system-color: #cecece;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 1,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary-color: #333333;
+                --secondary-color: #444444;
+                --tertiary-color: #555555;
+                --accent-color: #ababab;
+                --font-color: #d9d9c9;
+
+                --user-color: rgb(76, 76, 255);
+                --assistant-color: rgb(128, 128, 128);
+                --system-color: #4c4c4c;
+            }
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            /* height: 100svh; */
+            align-items: center;
+            background-color: var(--secondary-color);
+        }
+        header {
+            background-color: var(--primary-color);
+            text-align: center;
+            padding: 1rem;
+            justify-self: flex-start;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            color: var(--font-color);
+            text-align: left;
+        }
+        select {
+            padding: 0.75rem;
+            border: none;
+            border-radius: 1rem;
+            background-color: var(--secondary-color);
+            color: var(--font-color);
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            width: fit-content;
+        }
+        #game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            padding: 0 1rem;
+        }
+        #windowSplit {
+            display: flex;
+            flex-direction: column;
+            width: 60vw;
+            /* height: 100%; */
+            box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+            margin-bottom: 1rem;
+            border-radius: 1rem;
+        }
+        #userSide, #assistantSide {
+            display: flex;
+            flex-direction: column;
+            padding: 0.5rem;
+            width: 100%;
+            background-color: var(--secondary-color);
+            border: none;
+            border-radius: 1rem;
+            max-width: 60vw;
+            height: max-content;
+            max-height: 40svh;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            gap: 0.5rem;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2) inset;
+        }
+
+        #userSide::-webkit-scrollbar, #assistantSide::-webkit-scrollbar, #outputGoal::-webkit-scrollbar {
+            display: none;
+        }
+
+        #assistantSide {
+            background-color: var(--tertiary-color);
+            border-radius: 1rem 1rem 0 0;
+            border-bottom: dashed 6px #333;
+            /* max-height: 40svh; */
+        }
+
+        #userSide {
+            background-color: var(--secondary-color);
+            border-radius: 0;
+        }
+
+        #input {
+            display: flex;
+            flex-direction: row;
+            padding: 1rem;
+            justify-self: flex-end;
+            gap: 1rem;
+            width: 100%;
+            max-width: 60vw;
+            background-color: var(--secondary-color);
+            border-radius: 1rem 1rem 0 0;
+        }
+
+        #input textarea {
+            flex: 3;
+            padding: 1rem;
+            border: none;
+            border-radius: 1rem;
+            font-size: 1rem;
+            box-shadow: inset 0 0 5px var(--accent-color);
+            font-family: Arial, sans-serif;
+            resize: none;
+            background-color: var(--secondary-color);
+            color: var(--font-color);
+        }
+
+        #input button {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 1rem;
+            background-color: var(--user-color);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            width: fit-content;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 1rem;
+        }
+
+        #input button:hover {
+            background-color: rgb(55, 55, 137);
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            padding: 0.5rem 1rem;
+        }
+
+        .message span:not(.material-symbols-outlined) {
+            padding: 0 .5rem;
+            text-transform: capitalize;
+            color: var(--font-color);
+        }
+
+        .placeholder {
+            color: var(--font-color);
+            font-style: italic;
+            width: 100%;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .fixed {
+            background-color: var(--tertiary-color);
+            color: var(--font-color);
+        }
+
+        .outputGoal {
+            border: 2px dashed var(--font-color);
+            border-radius: 1rem;
+            padding: 0.5rem;
+            margin: 2rem 1rem 1rem;
+        }
+
+        .content {
+            padding: 1rem;
+            border-radius: 1rem;
+            box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hidden .content p {
+            filter: blur(4px);
+        }
+
+        .user .content {
+            background-color: var(--user-color);
+            color: white;
+        }
+
+        .assistant .content {
+            background-color: var(--assistant-color);
+            color: var(--font-color);
+        }
+
+        .system .content {
+            background-color: var(--system-color);
+            color: var(--font-color);
+            font-style: italic;
+        }
+
+        .material-symbols-outlined {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #outputGoal {
+            display: flex;
+            flex-direction: row;
+            padding: 1rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            background-color: var(--secondary-color);
+            color: var(--font-color);
+            width: 100%;
+            max-width: 60vw;
+            max-height: 30%;
+            gap: 1rem;
+            align-items: flex-start;
+            overflow-y: scroll;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        #runControls {
+            display: flex;
+            flex-direction: row;
+            padding: .5rem;
+            width: 100%;
+            max-width: 60vw;
+            justify-content: space-between;
+            background-color: var(--secondary-color);
+            border-radius: 0 0 1rem 1rem;
+            /* box-shadow: 0 0 5px rgba(0,0,0,0.2); */
+            /* margin-bottom: .5rem; */
+            align-items: center;
+        }
+
+        #controls {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1rem;
+
+        }
+
+        #controls button:disabled {
+            background-color: gray;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        button:disabled .material-symbols-outlined {
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #score {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            gap: .5rem;
+            color: gold;
+            background-color: var(--tertiary-color);
+            border-radius: 1rem;
+            padding: .5rem;
+        }
+
+        .reason {
+            text-align: center;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .reason .material-symbols-outlined {
+            color: gold;
+        }
+
+        #runControls span:not(.material-symbols-outlined) {
+            padding: 0;
+            text-transform: capitalize;
+            color: var(--font-color);
+            text-align: right;
+        }
+
+        #runControls button {
+            padding: .5rem;
+            display: flex;
+            justify-content: center;
+            border: none;
+            border-radius: 50%;
+            background-color: var(--user-color);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            width: fit-content;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 1rem;
+        }
+
+        #runControls button:hover {
+            background-color: rgb(55, 55, 137);
+        }
+
+        dialog[open] {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 1rem;
+            background-color: var(--secondary-color);
+            color: var(--font-color);
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            max-width: max-content;
+        }
+
+        .nextLevel, .close {
+            padding: 1rem;
+            border: none;
+            border-radius: 1rem;
+            background-color: var(--user-color);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            width: fit-content;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 1rem;
+        }
+
+        ::backdrop {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        /* #messages::-webkit-scrollbar {
+            display: none;
+        } */
+
+        #messages {
+            display: flex;
+            flex-direction: column;
+            /* gap: 0.5rem; */
+            border-radius: 1rem 1rem 0 0;
+            width: 100%;
+            max-width: 60vw;
+            max-height: calc(100svh - 14rem); 
+            /* padding-bottom: 1rem; */
+            height: 100%;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--tertiary-color) var(--primary-color);
+            /* -ms-overflow-style: none;
+            scrollbar-width: none; */
+            /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.2) inset; */
+
+        }
+
+        .divider {
+            width: 100%;
+            height: 1rem;
+            border-bottom: dashed 6px var(--assistant-color);
+            background-color: var(--tertiary-color);
+        }
+
+        @media screen and (max-width: 768px) {
+            #input {
+                padding: 0.5rem;
+            }
+            #windowSplit {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+            #userSide, #assistantSide, #outputGoal, #input, #runControls, #messages {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+        
+        
+    </style>
+    <header>
+        <h1>Prompt Engineer</h1>
+        <select name="levelSelect" id="levelSelect">
+            <option value="level0" selected>Level 0</option>
+            <option value="level1">Level 1</option>
+            <option value="level2">Level 2</option>
+        </select>
+        <!-- More thins later perhaps -->
+    </header>
+    <section id="game">
+        <div id="windowSplit">
+            <div id="messages">
+                
+            </div>
+
+            <!-- Where AI responses and preloaded messages are -->
+            <!-- <div id="assistantSide">
+                <div class="message system">
+                    <span>System</span>
+                    <p class="content">This is a system message. It denotes (mostly) inarguable rules for the Assistant to follow.<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#333"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></p>
+                </div>
+                <div class="message assistant">
+                    <span>Assistant</span>
+                    <p class="content">Hello, this is an assistant message. It is an AI generated response to user input.</p>
+                </div>
+            </div> -->
+            <!-- Where user adds messages -->
+            <!-- <div id="userSide">
+                <i>Your messages will appear here...</i>
+            </div> -->
+            <div class="message assistant outputGoal"><span>Assistant</span><p class="content">This is the goal message.</p></div>
+
+            <div id="runControls">
+                <div id="score">
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                </div>
+                <div id="controls">
+                    <span>Reset</span>
+                    <button id="reset"><span class="material-symbols-outlined">refresh</span></button>
+                    <span>Play</span>
+                    <button id="run"><span class="material-symbols-outlined">send</span></button>
+                </div>
+            </div>
+        </div>
+        
+            
+    </section>
+    <div id="input">
+        <!-- <button id="type">User:</button> -->
+        <textarea id="message" placeholder="Type your message here"></textarea>
+        <button id="send">Add Message</button>
+    </div>
+    <dialog>
+        <h1>Welcome!</h1>
+        <p>This is a simple interface for solving AI prompting puzzles. You will notice the interface divided into two halves. <br><br>The top half contains messages in the conversation that are fixed and cannot be removed. <br><br>The messages below the dashed line can be removed with the bin icon and tapped to edit the text. <br><br> You must carefully instruct ("prompt") the AI to return the "goal output" shown at the bottom of the conversation. <br><br>The text must match exactly for it to count! Good Luck!</p>
+        <button class="close">Ok</button>
+    </dialog>
+</body>
+<script type="module">
+    import { streamCompletion, chatCompletion } from "./chat.js";
+
+    let gameContainer = document.getElementById('game');
+    let userSide = document.getElementById('userSide');
+    let messages = document.getElementById('messages');
+    let assistantSide = document.getElementById('assistantSide');
+    let outputGoal = document.querySelector('.outputGoal');
+    let messageInput = document.getElementById('message');
+    let sendButton = document.getElementById('send');
+    let resetButton = document.getElementById('reset');
+    let runButton = document.getElementById('run');
+    let modal = document.querySelector('dialog');
+    let score = document.getElementById('score');
+    let levelSelect = document.getElementById('levelSelect');
+
+    let star = document.createElement('span');
+    star.classList.add('material-symbols-outlined');
+    star.innerText = 'star';
+
+    let defaultModalContent = modal.innerHTML;
+
+    let data = {
+        chatObj: {
+            model: 'gpt-4o-mini',
+            messages: [],
+        },
+        dividerLocation: 0
+    }
+
+    let currentLevel = 'level0';
+    let currentGoal = '';
+    let defaultMaxScore = 3;
+    let currentScore = 3;
+    let maxScore = defaultMaxScore;
+    let scoreReasons = [];
+
+    async function readJSON(url) {
+        try {
+            let response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            let data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('There was a problem with the fetch operation: ', error);
+        }
+    }
+
+    async function setChatObj(url) {
+        try {
+            let res = await readJSON(url);
+            data.chatObj = res.chatObj;
+            currentGoal = res.goal || '';
+            maxScore = res.maxScore || defaultMaxScore;
+            currentScore = maxScore;
+            scoreReasons = res.scoreReasons || [];
+            // console.log(res);
+            data.dividerLocation = res.dividerLocation;
+
+        } catch (error) {
+            console.error('There was a problem setting the chat object', error);
+        }
+    }
+
+    async function loadLevel(level) {
+        try {
+            let url = `./levels/${level}.json`;
+            await setChatObj(url);
+
+            updateChat();
+            setScore();
+
+            currentLevel = level;
+        } catch (error) {
+            console.error('There was a problem loading the level', error);
+        }
+    }
+
+    levelSelect.addEventListener('change', (event) => {
+        loadLevel(event.target.value);
+    });
+
+    function setScore() {
+        scoreReasons.forEach(reason => {
+            if (reason.criteria.startsWith('messageCount')) {
+                let messageCount = reason.criteria.split('==')[1].trim();
+                if (data.chatObj.messages.filter(message => message.role === 'user').length > messageCount) {
+                    reason.failed = true;
+                } else {
+                    reason.failed = false;
+                }
+            }
+        });
+        let failedReasons = scoreReasons.filter(reason => reason.failed);
+
+        currentScore = maxScore - failedReasons.length;
+
+        score.innerHTML = '';
+        for (let i = 0; i < maxScore; i++) {
+            let newStar = star.cloneNode(true);
+           
+            if (scoreReasons[i]) {
+                newStar.title = scoreReasons[i].desc;
+                newStar.reason = scoreReasons[i];
+            }
+            if(failedReasons) {
+                if(failedReasons.find(reason => reason === newStar.reason)) {
+                    newStar.style.color = 'gray';
+                }
+            }
+            score.appendChild(newStar);
+        }
+        score.addEventListener('click', () => {
+            modal.innerHTML = `
+            <h1>Score</h1>
+            <p>Stars are awarded for completing the level and any optional challenges.</p>
+            `;
+            // console.log(scoreReasons);
+            scoreReasons.forEach((reason, index) => {
+                let reasonDiv = document.createElement('div');
+                reasonDiv.classList.add('reason');
+                reasonDiv.innerHTML = `<span class="material-symbols-outlined">star</span> ${reason.desc}`;
+                modal.appendChild(reasonDiv);
+            });
+            modal.innerHTML += `<button onclick="this.parentElement.close()" class="close">Close</button>`;
+            modal.showModal();
+        });
+
+        
+        
+    }
+
+    function addDivider() {
+        let divider = document.createElement('div');
+        divider.classList.add('divider');
+        // console.log(data.dividerLocation);
+        messages.insertBefore(divider, messages.children[data.dividerLocation]);
+    }
+
+    function updateChat() {
+        messages.innerHTML = '';
+        // assistantSide.innerHTML = '';
+        outputGoal.innerHTML = '';
+
+        data.chatObj.messages.forEach((message, index) => {
+            addMessage(message, index);
+        });
+        setGoal(currentGoal);
+        addDivider();
+
+        let lastMessage = messages.lastElementChild;
+        // console.log(messages);
+
+        if(messages.querySelector('.user')) {
+            // Remove the placeholder
+            let placeholder = messages.querySelector('.placeholder');
+            if (placeholder) {
+                placeholder.remove();
+            }
+        } else {
+            // Display the placeholder
+            let placeholder = document.createElement('p');
+            placeholder.classList.add('placeholder');
+            placeholder.innerText = 'Your messages will appear here...';
+            let lastMessage = messages.lastElementChild;
+            if(lastMessage.classList.contains('outputGoal')) {
+                messages.insertBefore(placeholder, lastMessage);
+            } else {
+                messages.appendChild(placeholder);
+            }
+        }
+
+        
+
+        setScore();
+        // messages.lastElementChild.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function addMessage(message, index) {
+        let messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(message.role);
+        let senderSpan = document.createElement('span');
+        senderSpan.innerText = message.role;
+        messageDiv.appendChild(senderSpan);
+        let content = document.createElement('div');
+        content.classList.add('content');
+        let contentP = document.createElement('p');
+        contentP.innerText = message.content;
+        content.appendChild(contentP);
+        messageDiv.appendChild(content);
+        messages.appendChild(messageDiv);
+        if (message.userSide || index > data.dividerLocation -1 && index != -1) {
+            if(message.role === 'user') {
+                contentP.contentEditable = true;
+                contentP.addEventListener('input', () => {
+                    message.content = contentP.innerText;
+                });
+                contentP.addEventListener('paste', (event) => {
+                    event.preventDefault();
+                    let text = event.clipboardData.getData('text/plain');
+                    document.execCommand('insertText', false, text);
+                });
+            }
+            addRemoveButton(content, message);
+        } else {
+            if(index != -1) 
+            messageDiv.classList.add('fixed');
+        }
+        if(message.hidden) {
+            messageDiv.classList.add('hidden');
+            contentP.innerText = 'You thought it would be that easy?';
+            addShowButton(contentP, message);
+        }
+        // } else {
+        //     if(message.userSide) {
+        //         messages.appendChild(messageDiv);
+        //         addRemoveButton(contentP, message);
+        //     } else {
+        //         messages.appendChild(messageDiv);
+        //     }
+        // }
+        return messageDiv;
+    }
+
+    function addRemoveButton(messageDiv, message) {
+        let removeButton = document.createElement('span');
+        removeButton.classList.add('material-symbols-outlined');
+        removeButton.innerText = 'delete';
+        removeButton.addEventListener('click', () => {
+            data.chatObj.messages = data.chatObj.messages.filter(m => m !== message);
+            updateChat();
+        });
+        messageDiv.appendChild(removeButton);
+    }
+
+    function addShowButton(contentP, message) {
+        let showButton = document.createElement('span');
+        showButton.classList.add('material-symbols-outlined');
+        showButton.innerText = 'visibility';
+        showButton.addEventListener('click', () => {
+            modal.innerHTML = `
+                <h1>Reveal Secret</h1>
+                <p>This secret system message contains rules that the AI (and you) must follow. <br><br>Having trouble? You can reveal the secret information in this message, but try to work it out first!<br><br>Revealing a secret will not allow you to get a perfect score.</p>
+                <button onclick="this.parentElement.close()" class="close">Close</button>
+            `;
+            let revealButton = document.createElement('button');
+            revealButton.innerText = 'Reveal Secret';
+            revealButton.classList.add('close');
+            revealButton.addEventListener('click', () => {
+                contentP.innerText = message.content;
+                let messageDiv = contentP.closest('.message');
+                messageDiv.classList.remove('hidden');
+                showButton.remove();
+                scoreReasons.forEach(reason => {
+                    if (reason.criteria === 'secretMessage') {
+                        reason.failed = true;
+                    }
+                });
+                message.hidden = false;
+                setScore();
+                modal.close();
+            });
+            modal.insertBefore(revealButton, modal.querySelector('.close'));
+            modal.showModal();
+        });
+        contentP.parentElement.appendChild(showButton);
+    }
+
+    function setGoal(goal) {
+        outputGoal.remove();
+        if(currentGoal === '') return;
+        let goalDiv = document.createElement('div');
+        goalDiv.classList.add('message');
+        goalDiv.classList.add('assistant');
+        goalDiv.classList.add('outputGoal');
+        let senderSpan = document.createElement('span');
+        senderSpan.innerText = 'Goal:';
+        goalDiv.appendChild(senderSpan);
+        let contentP = document.createElement('p');
+        contentP.classList.add('content');
+        contentP.innerText = goal.content;
+        goalDiv.appendChild(contentP);
+        outputGoal = goalDiv;
+        messages.appendChild(outputGoal);
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadLevel('level0');
+        modal.showModal();
+        let close = modal.querySelector('.close');
+        close.addEventListener('click', () => {
+            modal.close();
+            modal.innerHTML = defaultModalContent;
+        });
+    });
+
+    sendButton.addEventListener('click', () => {
+        let message = messageInput.value;
+        if(message === '') return;
+        data.chatObj.messages.push({ role: 'user', content: message, userSide: true });
+        updateChat();
+        messageInput.value = '';
+        // messages.scrollTop = messages.scrollHeight;
+    });
+
+    resetButton.addEventListener('click', () => {
+        loadLevel(currentLevel);
+    });
+
+    runButton.addEventListener('click', async () => {
+        let obj = {
+            model: data.chatObj.model,
+            messages: data.chatObj.messages
+        }
+        runButton.disabled = true;
+        resetButton.disabled = true;
+        runButton.children[0].innerText = 'progress_activity';
+        runButton.children[0].classList.add('spin');
+        let res = await chatCompletion(obj);
+        let response = res.choices[0].message.content;
+        // console.log(response);
+        data.chatObj.messages.push({ role: 'assistant', content: response, userSide: true });
+        updateChat();
+        runButton.disabled = false;
+        resetButton.disabled = false;
+        runButton.children[0].innerText = 'send';
+        runButton.children[0].classList.remove('spin');
+        // messages.scrollTop = messages.scrollHeight;
+        evaluateGoal(response);
+    });
+
+    function evaluateGoal(response) {
+        if (response === currentGoal.content) {
+            modal.innerHTML = `
+                <h1>Congratulations!</h1>
+                <p>You have successfully completed the level!</p>
+                <button class="nextLevel">Next Level</button>
+                <button onclick="this.parentElement.close()" class="nextLevel">Close</button>
+            `;
+            let scoreDisp = score.cloneNode(true);
+            modal.insertBefore(scoreDisp, modal.querySelector('.nextLevel'));
+            modal.showModal();
+
+            let nextLevelMessage = {
+                role: 'system',
+                content: 'You have successfully completed the level!',
+                userSide: false
+            }
+
+            let nextLevelMsg = addMessage(nextLevelMessage, -1);
+            nextLevelMsg.scrollIntoView({ behavior: 'smooth' });
+            let nextLevelBtn = document.createElement('button');
+            nextLevelBtn.classList.add('nextLevel');
+            nextLevelBtn.innerText = 'Next Level';
+            nextLevelBtn.addEventListener('click', () => {
+                let level = parseInt(currentLevel.replace('level', ''));
+                level++;
+                loadLevel(`level${level}`);
+                modal.innerHTML = defaultModalContent;
+                modal.close();
+            });
+            nextLevelMsg.querySelector('.content').appendChild(nextLevelBtn);
+
+            let nextLevel = modal.querySelector('.nextLevel');
+            nextLevel.addEventListener('click', () => {
+                let level = parseInt(currentLevel.replace('level', ''));
+                level++;
+                loadLevel(`level${level}`);
+                modal.innerHTML = defaultModalContent;
+                modal.close();
+            });
+
+            // console.log(currentScore, maxScore);
+        }
+    }
+
+    // streamCompletion(chatObj, key, (error, content) => {
+    //     if (error) {
+    //         console.error('Failed to parse JSON:', error);
+    //     } else {
+    //         if (content === '!Stream completed!') {
+    //             });
+
+    //         } else {
+    //             message = message + content;
+    //         }
+    //     }
+    // });
+</script>
+</html>
