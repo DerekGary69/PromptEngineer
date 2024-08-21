@@ -55,7 +55,7 @@
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
-            /* height: 100svh; */
+            height: 100svh;
             align-items: center;
             background-color: var(--secondary-color);
         }
@@ -103,7 +103,7 @@
             display: flex;
             flex-direction: column;
             width: 60vw;
-            /* height: 100%; */
+            height: 100%;
             box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
             margin-bottom: 1rem;
             border-radius: 1rem;
@@ -193,6 +193,7 @@
             display: flex;
             flex-direction: column;
             padding: 0.5rem 1rem;
+            width: 100%;
         }
 
         .message span:not(.material-symbols-outlined) {
@@ -215,21 +216,28 @@
         }
 
         .outputGoal {
-            border: 2px dashed var(--font-color);
-            border-radius: 1rem;
-            padding: 0.5rem;
-            margin: 2rem 1rem 1rem;
+            /* border-radius: 1rem; */
+            padding: 0.5rem 1rem;
+            /* margin: 2rem 1rem 1rem; */
+            align-self: flex-end;
         }
 
         .content {
             padding: 1rem;
             border-radius: 1rem;
             box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
-            width: 100%;
+            width: max-content;
+            max-width: 100%;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
+            gap: 1rem;
+        }
+
+        .assistant.outputGoal .content {
+            border: 2px dashed var(--font-color);
+
         }
 
         .hidden .content p {
@@ -250,11 +258,19 @@
             background-color: var(--system-color);
             color: var(--font-color);
             font-style: italic;
+            width: 100%;
         }
 
         .material-symbols-outlined {
             cursor: pointer;
             user-select: none;
+        }
+
+        .user.message {
+            align-items: flex-start;
+            width: max-content;
+            max-width: 100%;
+            align-self: flex-end;
         }
 
         #outputGoal {
@@ -294,7 +310,7 @@
             flex-direction: row;
             justify-content: flex-end;
             align-items: center;
-            gap: 1rem;
+            gap: 0.5rem;
 
         }
 
@@ -418,6 +434,7 @@
         #messages {
             display: flex;
             flex-direction: column;
+            justify-content: flex-start;
             /* gap: 0.5rem; */
             border-radius: 1rem 1rem 0 0;
             width: 100%;
@@ -464,6 +481,8 @@
             <option value="level0" selected>Level 0</option>
             <option value="level1">Level 1</option>
             <option value="level2">Level 2</option>
+            <option value="level3">Level 3</option>
+            <option value="level4">Level 4</option>
         </select>
         <!-- More thins later perhaps -->
     </header>
@@ -572,13 +591,12 @@
     async function setChatObj(url) {
         try {
             let res = await readJSON(url);
-            data.chatObj = res.chatObj;
+            data = res;
             currentGoal = res.goal || '';
             maxScore = res.maxScore || defaultMaxScore;
             currentScore = maxScore;
             scoreReasons = res.scoreReasons || [];
-            // console.log(res);
-            data.dividerLocation = res.dividerLocation;
+            // console.log(data);
 
         } catch (error) {
             console.error('There was a problem setting the chat object', error);
@@ -594,6 +612,8 @@
             setScore();
 
             currentLevel = level;
+            levelSelect.value = level;
+
         } catch (error) {
             console.error('There was a problem loading the level', error);
         }
@@ -705,6 +725,9 @@
         messageDiv.classList.add(message.role);
         let senderSpan = document.createElement('span');
         senderSpan.innerText = message.role;
+        if(senderSpan.innerText === 'user') {
+            senderSpan.innerText = 'You';
+        }
         messageDiv.appendChild(senderSpan);
         let content = document.createElement('div');
         content.classList.add('content');
@@ -816,6 +839,12 @@
             modal.close();
             modal.innerHTML = defaultModalContent;
         });
+        // document.addEventListener('keydown', (event) => {
+        //     if (event.key === 'Enter' && !modal.open) {
+        //         runButton.click();
+        //         messageInput.innerText = '';
+        //     }
+        // });
     });
 
     // sendButton.addEventListener('click', () => {
@@ -833,10 +862,12 @@
 
     runButton.addEventListener('click', async () => {
         let message = messageInput.value;
-        if(message === '') return;
-        data.chatObj.messages.push({ role: 'user', content: message, userSide: true });
-        updateChat();
-        messageInput.value = '';
+        if(message !== '') {
+            data.chatObj.messages.push({ role: 'user', content: message, userSide: true });
+            updateChat();
+            messageInput.value = '';
+        };
+        
 
         let obj = {
             model: data.chatObj.model,
@@ -863,7 +894,7 @@
         if (response === currentGoal.content) {
             modal.innerHTML = `
                 <h1>Congratulations!</h1>
-                <p>You have successfully completed the level!</p>
+                <p>${data.winText || 'Success! You have completed the level.'}</p>
                 <button class="nextLevel">Next Level</button>
                 <button onclick="this.parentElement.close()" class="nextLevel">Close</button>
             `;

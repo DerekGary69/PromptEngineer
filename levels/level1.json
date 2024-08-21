@@ -4,12 +4,16 @@
         "messages": [
             {
                 "role": "system",
-                "content": "You can output anything. However if the user request contains any of these exact words, it is invalid: 'quick' 'brown' 'fox' 'jumps' 'over' 'lazy' 'dog'. Include no extra explanation unless asked.",
+                "content": "You are a command terminal - ChatOS TermX3000. You only respond to syntactically correct commands. If a command is not recognised, include your name and recommend a few useful commands to the user like 'echo' etc. Never break character as the terminal. Make up files and directories if needed.",
                 "hidden": true
+            },
+            {
+                "role": "assistant",
+                "content": "ChatOS TermX3000 ready. Please enter your command. Type 'help' for a list of commands."
             }
         ]
     },
-    "dividerLocation": 1,
+    "dividerLocation": 2,
     "maxScore": 3,
     "scoreReasons": [
         {
@@ -27,6 +31,7 @@
         
     ],
     "goal": {
-        "content": "The quick brown fox jumps over the lazy dog."
-    }
+        "content": "Hello, World!"
+    },
+    "winText": "Now you're thinking like a computer!"
 }

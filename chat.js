@@ -6,7 +6,7 @@ const imgUrl = 'https://api.openai.com/v1/images/generations';
 async function streamCompletion(chatObj, key, callback) {
     const headers = {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${key}`
+        // 'Authorization': `Bearer ${key}`
     };
 
     console.log('Start stream completion...');
