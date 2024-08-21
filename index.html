@@ -169,7 +169,7 @@
 
         #input button {
             flex: 1;
-            padding: 1rem;
+            padding: 0;
             border: none;
             border-radius: 1rem;
             background-color: var(--user-color);
@@ -179,7 +179,10 @@
             box-shadow: 0 0 5px rgba(0,0,0,0.2);
             width: fit-content;
             transition: background-color 0.3s, color 0.3s;
-            font-size: 1rem;
+        }
+
+        #input button span {
+            font-size: 1.5rem;
         }
 
         #input button:hover {
@@ -295,10 +298,10 @@
 
         }
 
-        #controls button:disabled {
-            background-color: gray;
-            color: white;
-            cursor: not-allowed;
+        button:disabled {
+            background-color: gray !important;
+            color: white !important;
+            cursor: not-allowed !important;
         }
 
         button:disabled .material-symbols-outlined {
@@ -496,8 +499,8 @@
                 <div id="controls">
                     <span>Reset</span>
                     <button id="reset"><span class="material-symbols-outlined">refresh</span></button>
-                    <span>Play</span>
-                    <button id="run"><span class="material-symbols-outlined">send</span></button>
+                    <!-- <span>Play</span>
+                    <button id="run"><span class="material-symbols-outlined">send</span></button> -->
                 </div>
             </div>
         </div>
@@ -507,7 +510,8 @@
     <div id="input">
         <!-- <button id="type">User:</button> -->
         <textarea id="message" placeholder="Type your message here"></textarea>
-        <button id="send">Add Message</button>
+        <!-- <button id="send">Add Message</button> -->
+        <button id="run"><span class="material-symbols-outlined">send</span></button>
     </div>
     <dialog>
         <h1>Welcome!</h1>
@@ -814,20 +818,26 @@
         });
     });
 
-    sendButton.addEventListener('click', () => {
-        let message = messageInput.value;
-        if(message === '') return;
-        data.chatObj.messages.push({ role: 'user', content: message, userSide: true });
-        updateChat();
-        messageInput.value = '';
-        // messages.scrollTop = messages.scrollHeight;
-    });
+    // sendButton.addEventListener('click', () => {
+    //     let message = messageInput.value;
+    //     if(message === '') return;
+    //     data.chatObj.messages.push({ role: 'user', content: message, userSide: true });
+    //     updateChat();
+    //     messageInput.value = '';
+    //     // messages.scrollTop = messages.scrollHeight;
+    // });
 
     resetButton.addEventListener('click', () => {
         loadLevel(currentLevel);
     });
 
     runButton.addEventListener('click', async () => {
+        let message = messageInput.value;
+        if(message === '') return;
+        data.chatObj.messages.push({ role: 'user', content: message, userSide: true });
+        updateChat();
+        messageInput.value = '';
+
         let obj = {
             model: data.chatObj.model,
             messages: data.chatObj.messages
